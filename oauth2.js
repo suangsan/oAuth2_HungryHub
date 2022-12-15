@@ -1,7 +1,7 @@
-const OAUTH2_PROVIDER = 'hhstaging.hungryhub.com/dashboard/v2/owners/sign_in?locale=en';
+const OAUTH2_PROVIDER = 'https://hhstaging.hungryhub.com';
 const OAUTH2_CLIENT_ID = '0_fwWVrm8U_VtDPxPQ4oUZGChZfUrAZ_WagGXQeEhOA';
 const OAUTH2_CLIENT_SECRET = 'e7i_CWH8TQLev9cwAwODIw5sCCdI7Icp5DrdKqaP_1U';
-const OAUTH2_CALLBACK_URL = 'http://103.58.151.121:8080/HungryHubCallBack';
+const OAUTH2_CALLBACK_URL = 'https://2b35-103-58-151-121.ap.ngrok.io/HungryHubCallBack';
 
 let accessToken = null;
 let refreshToken = null;
@@ -15,18 +15,22 @@ function requestAccessToken() {
 // Handle the access token response from the OAuth2 provider
 function handleAccessTokenResponse() {
   // Parse the access token and refresh token from the URL hash fragment
-  const hash = window.location.hash.substr(1);
-  const params = new URLSearchParams(hash);
-  accessToken = params.get('access_token');
-  refreshToken = params.get('refresh_token');
+//   const hash = window.location.hash.substr(1);
+//   const params = new URLSearchParams(hash);
+//   accessToken = params.get('access_token');
+//   refreshToken = params.get('refresh_token');
 
   // Exchange the access token for an access token and refresh token
-  fetch(`https://${OAUTH2_PROVIDER}/oauth2/token`, {
+  fetch(`https://${OAUTH2_PROVIDER}/partners/token.json`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/json',
     },
-    body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${accessToken}&client_id=${OAUTH2_CLIENT_ID}&client_secret=${OAUTH2_CLIENT_SECRET}`
+    body: {
+      "code": "G72XQdb5eaVROL9g3fBBA_RXEJbowwLVHXhl3VCakPw",
+      "grant_type": "authorization_code",
+      "redirect_uri": OAUTH2_CALLBACK_URL
+    }
   }).then(response => {
     if (response.ok) {
       return response.json();
