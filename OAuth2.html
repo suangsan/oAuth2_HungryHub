@@ -1,0 +1,57 @@
+<html>
+     <h1>HungryHub Login</h1>
+<button id="loginButton">Login</button>
+<p id="result"></p>
+<script>
+   const loginButton = document.getElementById('loginButton');
+   loginButton.addEventListener('click', () => login('copperbuffet@hungryhub.com','123456789'));
+
+  function login(email,password) {
+  const params = new URLSearchParams();
+  params.append('email',email);
+  params.append('password', password);
+
+  fetch('https://hhstaging.hungryhub.com/dashboard/v2?locale=th', {
+    method: 'POST',
+    body: params
+  })
+    .then(() => {
+      return getOAuth2Token();
+    })
+    .then((accessToken) => {
+        const resultElement = document.getElementById('result');
+        resultElement.innerHTML = `Access token: ${accessToken}`;
+    })
+    .catch((error) => {
+        const resultElement = document.getElementById('result');
+        resultElement.innerHTML = `Error`;
+    });
+}
+     function getOAuth2Token() {
+        const clientId = '0_fwWVrm8U_VtDPxPQ4oUZGChZfUrAZ_WagGXQeEhOA';
+        const clientSecret = 'e7i_CWH8TQLev9cwAwODIw5sCCdI7Icp5DrdKqaP_1';
+        const redirecturi = 'http://103.58.151.121:8080/HungryHubCallBack?accessToken';
+
+        const params = new URLSearchParams();
+        params.append('response_type', 'code');
+        params.append('client_id', clientId);
+        params.append('client_secret', clientSecret);
+        params.append('redirecturi',redirecturi);
+        params.append('scope','defalt')
+
+        fetch('https://hhstaging.hungryhub.com/oauth/authorize?', {
+          method: 'POST',
+          body: params
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const accessToken = data.access_token;
+            const redirectUrl = `http://103.58.151.121:8080/HungryHubCallBack?accessToken=${accessToken}`;
+            window.location.href = redirectUrl;
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+</script>
+</html>
